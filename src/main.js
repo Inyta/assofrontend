@@ -5,7 +5,7 @@ import App from './App'
 import router from './router'
 import store from './store'
 import Element from 'element-ui'
-import axios from 'axios'
+import axios from './axios'
 import "element-ui/lib/theme-chalk/index.css"
 
 

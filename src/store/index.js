@@ -4,29 +4,40 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-    state: {
-        JwtToken: ''
+  state: {
+    JwtToken: '',
+    userName: ''
+  },
+  getters: {
+    getStateJwtToken: function (state) {
+      return state.JwtToken
     },
-    getters: {
-        getStateJwtToken: function (state) {
-            return state.JwtToken
-        }
+    getUserName: function (state) {
+      return state.userName
+    }
+  },
+  mutations: {
+    SET_TOKEN(state, jwt) {
+      state.JwtToken = jwt;
     },
-    mutations: {
-        SET_TOKEN(state, jwt) {
-            state.JwtToken = jwt;
-        },
-        CLEAR_TOKEN(state) {
-            state.JwtToken = '';
-        }
+    CLEAR_TOKEN(state) {
+      state.JwtToken = '';
     },
-    actions: {
-        setToken(context,jwt) {
-            context.commit("SET_TOKEN",jwt);
-        },
-        clearToken(context) {
-            context.commit("CLEAR_TOKEN");
-        }
+    SET_NAME(state, userName) {
+      state.userName = userName;
+    }
+  },
+  actions: {
+    setToken(context, jwt) {
+      context.commit("SET_TOKEN", jwt);
     },
-    modules: {}
+    clearToken(context) {
+      context.commit("CLEAR_TOKEN");
+    },
+    setUserName(context, userName) {
+      context.commit("SET_NAME", userName);
+    }
+  },
+  modules: {},
+
 })

@@ -1,33 +1,51 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import UserLogin from '../views/UserLogin.vue'
-import Index from "../views/Index";
 import Register from "../views/Register";
+import UserInfo from "../views/UserInfo";
+import ResetPwd from "../views/ResetPwd";
+import ActivityShow from "../views/ActivityShow";
+import ActivityApplication from "../views/ActivityApplication";
 // import HelloWorld from '@/components/HelloWorld'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
-    // {
-    //     path: '/',
-    //     name: 'UserLogin',
-    //     component: UserLogin
-    // },
     {
-      path: '/',
-      name: 'Index',
-      component: Index
+        path: '/',
+        name: 'userLogin',
+        component: UserLogin
     },
     {
-      path: '/Index',
-      name: 'Index',
-      component: Index
+      path: '/userInfo',
+      name: 'userInfo',
+      component: UserInfo
     },
     {
-      path: '/Register',
-      name: 'Register',
+      path: '/register',
+      name: 'register',
       component: Register
+    },
+    {
+      path: '/resetPwd',
+      name: 'resetPwd',
+      component: ResetPwd
+    },
+    {
+      path: '/userLogin',
+      name: 'userLogin',
+      component: UserLogin
+    },
+    {
+      path: '/activityShow',
+      name: 'activityShow',
+      component: ActivityShow
+    },
+    {
+      path: '/activityApplication',
+      name: 'activityApplication',
+      component: ActivityApplication
     }
   ]
 })
