@@ -31,7 +31,7 @@
                   <el-form :model="ruleForm" :rules="rules" ref="ruleForm"
                            label-width="100px" class="demo-ruleForm" style="width: 50%;text-align: left">
                     <el-form-item label="" prop="resource">
-                      <el-upload action="http://localhost:8081/uploadAvatar"
+                      <el-upload :action="upLoadUrl"
                                  list-type="text"
                                  :on-success="getAvatarUrl"
                                  :headers="myHeaders">
@@ -52,7 +52,7 @@
                       <el-input v-model="ruleForm.phone" style="width: 200px" :disabled="isDisabled"></el-input>
                     </el-form-item>
                     <el-form-item>
-                      <el-button type="primary" :btnChange="btnChange" @click="submitForm('ruleForm')">{{btnText}}
+                      <el-button type="primary" :btnChange="btnChange" @click="submitForm('ruleForm')">{{ btnText }}
                       </el-button>
                       <el-button v-show="isShow" @click="resetForm('ruleForm')">取消</el-button>
                     </el-form-item>
@@ -68,133 +68,134 @@
 </template>
 
 <script>
-  import Head from "../components/Head";
-  import Aside from "../components/Aside";
+import Head from "../components/Head";
+import Aside from "../components/Aside";
 
-  export default {
-    name: "UserInfo",
-    components: {
-      Head,
-      Aside
-    },
-    data() {
-      return {
-        isDisabled: true,
-        isShow: false,
-        btnChange: '0',
-        btnText: '修改',
-        ruleForm: {
-          userName: '',
-          gender: '',
-          phone: '',
-          avatarUrl: '',
-        },
-        original: {
-          userName: '',
-          gender: '',
-          phone: '',
-          avatarUrl: '',
-        },
-        myHeaders: {
-          Authorization: this.$store.state.JwtToken
-        },
-        rules: {
-          userName: [
-            {required: true, message: '请输入姓名', trigger: 'blur'},
-            {min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur'}
-          ],
-          gender: [
-            {required: true, message: '请选择性别', trigger: 'change'}
-          ],
-          phone: [
-            {required: true, message: '请输入联系方式', trigger: 'blur'},
-            {min: 11, max: 11, message: '手机号码格式错误', trigger: 'blur'}
-          ]
-        }
-      };
-    },
-    methods: {
-      getAvatarUrl(response) {
-        this.ruleForm.avatarUrl = response.result
-        console.log(this.ruleForm.avatarUrl)
+export default {
+  name: "UserInfo",
+  components: {
+    Head,
+    Aside
+  },
+  data() {
+    return {
+      upLoadUrl: this.$axios.defaults.baseURL + 'uploadAvatar',
+      isDisabled: true,
+      isShow: false,
+      btnChange: '0',
+      btnText: '修改',
+      ruleForm: {
+        userName: '',
+        gender: '',
+        phone: '',
+        avatarUrl: '',
       },
-      submitForm(formName) {
-        if (this.btnChange === '0') {
-          this.isDisabled = false
-          this.btnText = '保存'
-          this.btnChange = '1'
-          this.isShow = true
-        } else {
-          this.$refs[formName].validate((valid) => {
-            if (valid) {
-              let config = {
-                headers: {
-                  'Authorization': this.$store.state.JwtToken
-                }
+      original: {
+        userName: '',
+        gender: '',
+        phone: '',
+        avatarUrl: '',
+      },
+      myHeaders: {
+        Authorization: this.$store.state.JwtToken
+      },
+      rules: {
+        userName: [
+          {required: true, message: '请输入姓名', trigger: 'blur'},
+          {min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur'}
+        ],
+        gender: [
+          {required: true, message: '请选择性别', trigger: 'change'}
+        ],
+        phone: [
+          {required: true, message: '请输入联系方式', trigger: 'blur'},
+          {min: 11, max: 11, message: '手机号码格式错误', trigger: 'blur'}
+        ]
+      }
+    };
+  },
+  methods: {
+    getAvatarUrl(response) {
+      this.ruleForm.avatarUrl = response.result
+      console.log(this.ruleForm.avatarUrl)
+    },
+    submitForm(formName) {
+      if (this.btnChange === '0') {
+        this.isDisabled = false
+        this.btnText = '保存'
+        this.btnChange = '1'
+        this.isShow = true
+      } else {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let config = {
+              headers: {
+                'Authorization': this.$store.state.JwtToken
               }
-              this.$axios.post("http://localhost:8081/editPersonalInfo", this.ruleForm, config)
-                .then(res => {
-                  if (res.data.code === 0) {
-                    this.$message({
-                      message: '修改成功',
-                      type: 'success',
-                      duration: '1000'
-                    });
-                    this.$store.dispatch("setUserName", this.ruleForm.userName)
-                  } else {
-                    this.$message({
-                      message: '修改失败，发生错误',
-                      type: 'error',
-                      duration: '1000'
-                    });
-                  }
-                })
-              this.btnText = '修改'
-              this.btnChange = '0'
-            } else {
-              console.log('error submit!!');
-              return false;
             }
+            this.$axios.post(this.$axios.defaults.baseURL + 'editPersonalInfo', this.ruleForm, config)
+              .then(res => {
+                if (res.data.code === 0) {
+                  this.$message({
+                    message: '修改成功',
+                    type: 'success',
+                    duration: '1000'
+                  });
+                  this.$store.dispatch("setUserName", this.ruleForm.userName)
+                } else {
+                  this.$message({
+                    message: '修改失败，发生错误',
+                    type: 'error',
+                    duration: '1000'
+                  });
+                }
+              })
+            this.btnText = '修改'
+            this.btnChange = '0'
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      }
+    },
+    resetForm(formName) {
+      this.btnText = '修改'
+      this.btnChange = '0'
+      this.isShow = false
+      this.isDisabled = true
+      this.ruleForm.userName = this.original.userName;
+      this.ruleForm.phone = this.original.phone;
+      this.ruleForm.gender = this.original.gender;
+    }
+  },
+  created() {
+    let config = {
+      headers: {
+        'Authorization': this.$store.state.JwtToken
+      }
+    }
+    this.$axios.get(this.$axios.defaults.baseURL + '/queryPersonalInfo', config)
+      .then(res => {
+        if (res.data.code === 0) {
+          this.ruleForm.userName = res.data.result.userName;
+          this.ruleForm.phone = res.data.result.phone;
+          this.ruleForm.gender = res.data.result.gender;
+          this.ruleForm.avatarUrl = res.data.result.avatarUrl;
+          console.log(this.ruleForm.avatarUrl)
+          this.original.userName = res.data.result.userName;
+          this.original.phone = res.data.result.phone;
+          this.original.gender = res.data.result.gender;
+        } else {
+          this.$message({
+            message: '查询个人信息失败',
+            type: 'error',
+            duration: '1000'
           });
         }
-      },
-      resetForm(formName) {
-        this.btnText = '修改'
-        this.btnChange = '0'
-        this.isShow = false
-        this.isDisabled = true
-        this.ruleForm.userName = this.original.userName;
-        this.ruleForm.phone = this.original.phone;
-        this.ruleForm.gender = this.original.gender;
-      }
-    },
-    created() {
-      let config = {
-        headers: {
-          'Authorization': this.$store.state.JwtToken
-        }
-      }
-      this.$axios.get("http://localhost:8081/queryPersonalInfo", config)
-        .then(res => {
-          if (res.data.code === 0) {
-            this.ruleForm.userName = res.data.result.userName;
-            this.ruleForm.phone = res.data.result.phone;
-            this.ruleForm.gender = res.data.result.gender;
-            this.ruleForm.avatarUrl = res.data.result.avatarUrl;
-            console.log(this.ruleForm.avatarUrl)
-            this.original.userName = res.data.result.userName;
-            this.original.phone = res.data.result.phone;
-            this.original.gender = res.data.result.gender;
-          } else {
-            this.$message({
-              message: '查询个人信息失败',
-              type: 'error',
-              duration: '1000'
-            });
-          }
-        })
-    }
+      })
   }
+}
 </script>
 
 <style scoped>

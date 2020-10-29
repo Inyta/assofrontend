@@ -7,6 +7,7 @@
           <span style="padding-right: 30px">个人中心</span>
         </template>
         <el-menu-item index="/userInfo">个人信息</el-menu-item>
+<!--        <el-menu-item index="/">备忘录</el-menu-item>-->
         <el-menu-item index="/resetPwd">修改密码</el-menu-item>
       </el-submenu>
       <el-submenu index="2">
