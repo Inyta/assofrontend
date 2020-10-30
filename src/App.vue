@@ -64,8 +64,8 @@
   }
 
   .localMenu {
-    margin-left: 20px;
-    line-height: 50px;
+    margin-left: 20px !important;
+    line-height: 50px !important;
     font-size: 14px;
   }
 
