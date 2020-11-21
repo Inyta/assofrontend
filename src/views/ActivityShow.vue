@@ -31,13 +31,23 @@
                   <div class="searchbox">
                     <el-form :inline="true">
                       <el-form-item label="承办社团:">
-                        <el-input suffix-icon="el-icon-search" placeholder="请选择社团"></el-input>
+                        <el-select filterable="filterable" v-model="associationId" clearable placeholder="请选择">
+                          <el-option
+                            v-for="item in options"
+                            :key="item.id"
+                            :label="item.associationName"
+                            :value="item.id">
+                          </el-option>
+                        </el-select>
                       </el-form-item>
                       <el-form-item label="活动名称:">
-                        <el-input suffix-icon="el-icon-search" placeholder="请输入活动名称"></el-input>
+                        <el-input suffix-icon="el-icon-search" v-model="eventName" placeholder="请输入"></el-input>
                       </el-form-item>
                       <el-form-item>
-                        <el-button type="primary">查询</el-button>
+                        <el-button type="primary"
+                                   @click="initEventTable({'associationId': associationId,'eventName':eventName,pageSize: 10, pageNum: 1})">
+                          查询
+                        </el-button>
                       </el-form-item>
                     </el-form>
                   </div>
@@ -48,40 +58,55 @@
               <el-col>
                 <el-card>
                   <div slot="header" class="card-header">
-                    <span><b>活动列表</b></span>
+                    <span><b>活动</b></span>
                   </div>
-                  <el-table
-                    :data="tableData"
-                    border
-                    style="width: 100%">
-                    <el-table-column
-                      prop="activityName"
-                      label="活动名称">
-                    </el-table-column>
-                    <el-table-column
-                      prop="hostCollege"
-                      label="承办社团">
-                    </el-table-column>
-                    <el-table-column
-                      prop="address"
-                      label="活动地址">
-                    </el-table-column>
-                    <el-table-column
-                      prop="startTime"
-                      label="开始时间">
-                    </el-table-column>
-                    <el-table-column
-                      prop="endTime"
-                      label="结束时间">
-                    </el-table-column>
-                    <el-table-column
-                      prop="numLimit"
-                      label="人数限制">
-                    </el-table-column>
-                  </el-table>
+                  <el-row>
+                    <el-col :span="4" v-for="(item) in tableData" :key="item.associationId" :offset="2" :pull="1"
+                            style="padding-top: 15px">
+                      <el-card :body-style="{ padding: '0px' }">
+                        <el-image
+                          :src="item.eventPic" fit="fill"></el-image>
+                        <div style="padding: 14px;">
+                          <span>{{ item.eventName }}</span>
+                          <div class="bottom clearfix">
+                            <time class="time">{{ item.beginTime }}</time>
+                            <el-button type="text" class="button" @click="clickEventInfo(item.associationId)">详情
+                            </el-button>
+                          </div>
+                        </div>
+                      </el-card>
+                    </el-col>
+                  </el-row>
                 </el-card>
               </el-col>
             </el-row>
+            <el-dialog
+              title="活动详情 "
+              :visible.sync="dialogVisible"
+              width="30%" center>
+              <div>
+                <h3>活动名称:&nbsp;&nbsp;{{ EventInfo.eventName }}</h3>
+              </div>
+              <div>
+                <h3>承办社团:&nbsp;&nbsp;{{ EventInfo.associationName }}</h3>
+              </div>
+              <div>
+                <h3>活动地点:&nbsp;&nbsp;{{ EventInfo.eventAddress }}</h3>
+              </div>
+              <div>
+                <h3>开始时间:&nbsp;&nbsp;{{ EventInfo.beginTime }}</h3>
+              </div>
+              <div>
+                <h3>结束时间:&nbsp;&nbsp;{{ EventInfo.endTime }}</h3>
+              </div>
+              <div>
+                <h3>参与人数:&nbsp;&nbsp;{{ EventInfo.memberCount }}/{{ EventInfo.limit }}</h3>
+              </div>
+              <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="joinEvent">报 名</el-button>
+                <el-button @click="dialogVisible = false">取 消</el-button>
+              </div>
+            </el-dialog>
           </div>
         </el-main>
       </el-container>
@@ -90,47 +115,118 @@
 </template>
 
 <script>
-  import Head from "../components/Head";
-  import Aside from "../components/Aside";
+import Head from "../components/Head";
+import Aside from "../components/Aside";
 
-  export default {
-    name: "ActivityShow",
-    components: {
-      Head,
-      Aside
-    },
-    data() {
-      return {
-        tableData: [
-          {
-            activityName: '羽毛球大赛',
-            startTime: '2021-09-03 14:00:00',
-            endTime: '2021-09-03 18:00:00',
-            address: '体育馆羽毛球室01',
-            numLimit: '40',
-            hostCollege: '羽毛球社'
-          },
-          {
-            activityName: '脱口秀大会',
-            startTime: '2021-09-03 9:00:00',
-            endTime: '2021-09-03 11:00:00',
-            address: '多功能厅',
-            numLimit: '200',
-            hostCollege: '脱口秀社'
-          }
-        ]
+export default {
+  name: "ActivityShow",
+  components: {
+    Head,
+    Aside
+  },
+  data() {
+    return {
+      options: [],
+      associationId: '',
+      eventName: '',
+      tableData: [],
+      dialogVisible: false,
+      EventInfo: {
+        id:'',
+        eventName: '',
+        associationName: '',
+        beginTime: '',
+        endTime: '',
+        memberCount: '',
+        eventAddress: '',
+        limit: ''
       }
     }
+  },
+  methods: {
+    joinEvent() {
+      this.$axios.get(this.$axios.baseURL + '/joinEvent',{
+        params:{
+          'eventId':this.EventInfo.id,
+          'limit':this.EventInfo.limit
+        }
+      }).then(res =>{
+        this.dialogVisible = false
+        this.$message({
+          message: res.data.msg,
+          type: 'success'
+        });
+      })
+    },
+    clickEventInfo(id) {
+      this.dialogVisible = true
+      this.$axios.get(this.$axios.baseURL + '/queryEventInfo', {
+        params: {
+          'eventId': id
+        }
+      }).then(res => {
+        this.EventInfo = JSON.parse(JSON.stringify(res.data.result))
+      })
+    },
+    initAssociationList() {
+      this.$axios.get(this.$axios.baseURL + '/queryAssociations')
+        .then(res => {
+            this.options = JSON.parse(JSON.stringify(res.data.result))
+          }
+        );
+    },
+    initEventTable(params) {
+      this.$axios.post(this.$axios.baseURL + '/queryEventByCond', params)
+        .then(res => {
+            this.tableData = JSON.parse(JSON.stringify(res.data.result.data))
+          }
+        );
+    },
+  },
+  created() {
+    this.initAssociationList()
+    this.initEventTable({pageSize: 10, pageNum: 1})
   }
+}
 </script>
 
 <style scoped>
-  .searchbox {
-    display: inline-block;
-    float: left;
-  }
+.searchbox {
+  display: inline-block;
+  float: left;
+}
 
-  .card-header {
-    text-align: left;
-  }
+.card-header {
+  text-align: left;
+}
+
+.time {
+  font-size: 13px;
+  color: #999;
+}
+
+.bottom {
+  margin-top: 13px;
+  line-height: 12px;
+}
+
+.button {
+  padding: 0;
+  float: right;
+}
+
+.image {
+  width: 100%;
+  display: block;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+
+.clearfix:after {
+  clear: both
+}
 </style>

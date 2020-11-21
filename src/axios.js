@@ -3,19 +3,17 @@ import Element from "element-ui";
 import store from "./store";
 import router from "./router";
 
-axios.defaults.baseURL = 'http://106.14.170.74:8081'
+// axios.baseURL = 'http://106.14.170.74:8081'
+axios.baseURL = 'http://localhost:8081'
 axios.interceptors.request.use(config => {
-  console.log("前置拦截")
   // 非登录请求统一设置请求头
-  if (!config.url.indexOf('/login')) {
+  if (config.url.includes('/login') === false) {
     config.headers.Authorization = store.state.JwtToken
-    console.log("请求头：" + store.state.JwtToken)
   }
   return config
 })
 axios.interceptors.response.use(response => {
     const res = response.data;
-    console.log("后置拦截")
     if (res.code === 0) {
       return response
     } else {
@@ -43,6 +41,9 @@ axios.interceptors.response.use(response => {
       //   path: '/login'
       // });
       error.message = '请重新登录';
+      setTimeout(function () {
+        _this.$router.push('/userLogin')
+      }, 500)
     }
     if (error.response.status === 403) {
       error.message = '权限不足，无法访问';

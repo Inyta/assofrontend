@@ -50,9 +50,8 @@ export default {
       const _this = this;
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$axios.post(this.$axios.defaults.baseURL + '/login', this.ruleForm)
+          this.$axios.post(this.$axios.baseURL + '/login', this.ruleForm)
             .then(res => {
-              console.log(res.status)
               if (res.data.code === 0) {
                 this.$message({
                   message: '登录成功',
@@ -69,8 +68,6 @@ export default {
               } else {
                 this.$message.error('账号密码错误');
               }
-              console.log(res.data.result.token)
-              console.log(res.data.result.userName)
             })
         } else {
           return false;

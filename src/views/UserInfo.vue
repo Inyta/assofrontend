@@ -31,7 +31,7 @@
                   <el-form :model="ruleForm" :rules="rules" ref="ruleForm"
                            label-width="100px" class="demo-ruleForm" style="width: 50%;text-align: left">
                     <el-form-item label="" prop="resource">
-                      <el-upload :action="upLoadUrl"
+                      <el-upload action="http://localhost:8081/uploadAvatar"
                                  list-type="text"
                                  :on-success="getAvatarUrl"
                                  :headers="myHeaders">
@@ -79,7 +79,7 @@ export default {
   },
   data() {
     return {
-      upLoadUrl: this.$axios.defaults.baseURL + 'uploadAvatar',
+      // upLoadUrl: this.$axios.baseURL + 'uploadAvatar',
       isDisabled: true,
       isShow: false,
       btnChange: '0',
@@ -117,7 +117,6 @@ export default {
   methods: {
     getAvatarUrl(response) {
       this.ruleForm.avatarUrl = response.result
-      console.log(this.ruleForm.avatarUrl)
     },
     submitForm(formName) {
       if (this.btnChange === '0') {
@@ -133,7 +132,7 @@ export default {
                 'Authorization': this.$store.state.JwtToken
               }
             }
-            this.$axios.post(this.$axios.defaults.baseURL + 'editPersonalInfo', this.ruleForm, config)
+            this.$axios.post(this.$axios.baseURL + 'editPersonalInfo', this.ruleForm, config)
               .then(res => {
                 if (res.data.code === 0) {
                   this.$message({
@@ -152,8 +151,9 @@ export default {
               })
             this.btnText = '修改'
             this.btnChange = '0'
+            this.isDisabled = true
+            this.isShow = false
           } else {
-            console.log('error submit!!');
             return false;
           }
         });
@@ -170,19 +170,13 @@ export default {
     }
   },
   created() {
-    let config = {
-      headers: {
-        'Authorization': this.$store.state.JwtToken
-      }
-    }
-    this.$axios.get(this.$axios.defaults.baseURL + '/queryPersonalInfo', config)
+    this.$axios.get(this.$axios.baseURL + '/queryPersonalInfo')
       .then(res => {
         if (res.data.code === 0) {
           this.ruleForm.userName = res.data.result.userName;
           this.ruleForm.phone = res.data.result.phone;
           this.ruleForm.gender = res.data.result.gender;
           this.ruleForm.avatarUrl = res.data.result.avatarUrl;
-          console.log(this.ruleForm.avatarUrl)
           this.original.userName = res.data.result.userName;
           this.original.phone = res.data.result.phone;
           this.original.gender = res.data.result.gender;

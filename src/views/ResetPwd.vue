@@ -30,13 +30,13 @@
                   <el-form :model="ruleForm" :rules="rules" ref="ruleForm"
                            label-width="100px" class="demo-ruleForm" style="width: 50%;text-align: left">
                     <el-form-item label="原密码" prop="exPwd">
-                      <el-input v-model="ruleForm.exPwd" style="width: 200px;"></el-input>
+                      <el-input show-password v-model="ruleForm.exPwd" style="width: 200px;"></el-input>
                     </el-form-item>
                     <el-form-item label="新密码" prop="newPwd">
-                      <el-input v-model="ruleForm.newPwd" style="width: 200px;"></el-input>
+                      <el-input show-password v-model="ruleForm.newPwd" style="width: 200px;"></el-input>
                     </el-form-item>
                     <el-form-item label="密码确认" prop="pwdCheck">
-                      <el-input v-model="ruleForm.pwdCheck" style="width: 200px;"></el-input>
+                      <el-input show-password v-model="ruleForm.pwdCheck" style="width: 200px;"></el-input>
                     </el-form-item>
                     <el-form-item>
                       <el-button type="primary" @click="submitForm('ruleForm')">修改</el-button>
