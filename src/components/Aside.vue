@@ -23,7 +23,7 @@
           <i class="el-icon-bicycle"></i>
           <span style="padding-right: 30px">社团管理</span>
         </template>
-        <el-menu-item index="/">社团列表</el-menu-item>
+        <el-menu-item index="/associationShow">社团列表</el-menu-item>
         <el-menu-item index="/">社团新闻</el-menu-item>
         <el-menu-item index="/">申请社团</el-menu-item>
       </el-submenu>

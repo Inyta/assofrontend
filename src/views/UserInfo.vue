@@ -132,7 +132,7 @@ export default {
                 'Authorization': this.$store.state.JwtToken
               }
             }
-            this.$axios.post(this.$axios.baseURL + 'editPersonalInfo', this.ruleForm, config)
+            this.$axios.post(this.$axios.baseURL + '/user/editPersonalInfo', this.ruleForm, config)
               .then(res => {
                 if (res.data.code === 0) {
                   this.$message({
@@ -170,7 +170,7 @@ export default {
     }
   },
   created() {
-    this.$axios.get(this.$axios.baseURL + '/queryPersonalInfo')
+    this.$axios.get(this.$axios.baseURL + '/user/queryPersonalInfo')
       .then(res => {
         if (res.data.code === 0) {
           this.ruleForm.userName = res.data.result.userName;

@@ -103,8 +103,8 @@
                 <h3>参与人数:&nbsp;&nbsp;{{ EventInfo.memberCount }}/{{ EventInfo.limit }}</h3>
               </div>
               <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="joinEvent">报 名</el-button>
-                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="joinEvent">{{ isJoin }}</el-button>
+                <el-button @click="dialogVisible = false">取消</el-button>
               </div>
             </el-dialog>
           </div>
@@ -131,52 +131,73 @@ export default {
       eventName: '',
       tableData: [],
       dialogVisible: false,
+      isJoin: '报名',
       EventInfo: {
-        id:'',
+        id: '',
         eventName: '',
         associationName: '',
         beginTime: '',
         endTime: '',
         memberCount: '',
         eventAddress: '',
-        limit: ''
+        limit: '',
+        isJoin: false
       }
     }
   },
   methods: {
     joinEvent() {
-      this.$axios.get(this.$axios.baseURL + '/joinEvent',{
-        params:{
-          'eventId':this.EventInfo.id,
-          'limit':this.EventInfo.limit
-        }
-      }).then(res =>{
-        this.dialogVisible = false
-        this.$message({
-          message: res.data.msg,
-          type: 'success'
-        });
-      })
+      console.log(this.EventInfo.join)
+      if (this.EventInfo.join) {
+        this.$axios.get(this.$axios.baseURL + '/event/cancelJoinEvent', {
+          params: {
+            'eventId': this.EventInfo.id,
+          }
+        }).then(res => {
+          this.dialogVisible = false
+          this.$message({
+            message: res.data.msg,
+            type: 'success'
+          });
+        })
+      } else {
+        this.$axios.get(this.$axios.baseURL + '/event/joinEvent', {
+          params: {
+            'eventId': this.EventInfo.id,
+            'limit': this.EventInfo.limit
+          }
+        }).then(res => {
+          this.dialogVisible = false
+          this.$message({
+            message: res.data.msg,
+            type: 'success'
+          });
+        })
+      }
     },
     clickEventInfo(id) {
       this.dialogVisible = true
-      this.$axios.get(this.$axios.baseURL + '/queryEventInfo', {
+      this.$axios.get(this.$axios.baseURL + '/event/queryEventInfo', {
         params: {
           'eventId': id
         }
       }).then(res => {
         this.EventInfo = JSON.parse(JSON.stringify(res.data.result))
+        console.log(this.EventInfo)
+        if (this.EventInfo.join) {
+          this.isJoin = '取消报名'
+        }
       })
     },
     initAssociationList() {
-      this.$axios.get(this.$axios.baseURL + '/queryAssociations')
+      this.$axios.get(this.$axios.baseURL + '/association/select')
         .then(res => {
             this.options = JSON.parse(JSON.stringify(res.data.result))
           }
         );
     },
     initEventTable(params) {
-      this.$axios.post(this.$axios.baseURL + '/queryEventByCond', params)
+      this.$axios.post(this.$axios.baseURL + '/event/queryEventByCond', params)
         .then(res => {
             this.tableData = JSON.parse(JSON.stringify(res.data.result.data))
           }

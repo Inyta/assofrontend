@@ -4,8 +4,9 @@ import UserLogin from '../views/UserLogin.vue'
 import Register from "../views/Register";
 import UserInfo from "../views/UserInfo";
 import ResetPwd from "../views/ResetPwd";
-import ActivityShow from "../views/ActivityShow";
-import ActivityApplication from "../views/ActivityApplication";
+import ActivityShow from "../views/EventShow";
+import ActivityApplication from "../views/EventApplication";
+import AssociationShow from "../views/AssociationShow";
 // import HelloWorld from '@/components/HelloWorld'
 
 Vue.use(Router)
@@ -46,6 +47,10 @@ export default new Router({
       path: '/activityApplication',
       name: 'activityApplication',
       component: ActivityApplication
+    },{
+      path: '/associationShow',
+      name: 'associationShow',
+      component: AssociationShow
     }
   ]
 })
